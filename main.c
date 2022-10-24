@@ -17,6 +17,7 @@ void menu();
 void select_option();
 const char *get_csv_field(char *, int);
 int lower_than_int(void *, void *);
+int lower_than_string(void *, void *);
 void file_exists(TreeMap *, TreeMap *, TreeMap *);
 int check_file_exists(char *);
 void import_file(char *, TreeMap *, TreeMap *, TreeMap *);
@@ -26,10 +27,13 @@ void list_exists(TreeMap *, TreeMap *, games *);
 void create_list(TreeMap *, games *, int);
 void print_nameMap(TreeMap * , char *);
 void print_byValuation(TreeMap *nameMap, TreeMap *map);
-void add_game(TreeMap *, TreeMap *, TreeMap *);\
+void add_game(TreeMap *, TreeMap *, TreeMap *);
 void print_bycost(TreeMap *,TreeMap *);
+void searchGame(TreeMap *, TreeMap *, TreeMap *);
+void editGame(games *, TreeMap *, TreeMap *, TreeMap *);
+void deleteFromList(TreeMap *, char *);
 
-void print_all_games(TreeMap *, TreeMap *); 
+void print_all_games(TreeMap *);
 
 int main(){
   select_option();
@@ -49,11 +53,11 @@ void menu() {
 }
 
 void select_option() {
-  TreeMap *nameMap = createTreeMap(lower_than_int);
+  TreeMap *nameMap = createTreeMap(lower_than_string);
   TreeMap *valuationMap = createTreeMap(lower_than_int);
   TreeMap *costMap = createTreeMap(lower_than_int);
 
-  int choice = -1;
+  int choice = 1;
   system("cls");
 
   while (choice != 0) {
@@ -78,7 +82,7 @@ void select_option() {
           printf("op %d\n", choice);
         break;
       case 6:
-          printf("op %d\n", choice);
+          searchGame(nameMap, valuationMap, costMap);
         break;
       case 7:
           printf("op %d\n", choice);
@@ -88,7 +92,7 @@ void select_option() {
         break;
       default:
           printf("Opcion incorrecta, intente de nuevo\n");
-          print_all_games(nameMap, valuationMap);
+          print_all_games(nameMap);
         break;
     }
   }
@@ -121,7 +125,12 @@ int check_file_exists(char *file) {
 }
 
 int lower_than_int(void * key1, void * key2) {
-    return key1<key2;
+  return key1<key2;
+}
+
+int lower_than_string(void * key1, void * key2) {
+    if(strcmp(key1, key2) < 0) return 1;
+    return 0;
 }
 
 const char *get_csv_field(char *tmp, int k) {
@@ -178,7 +187,7 @@ void import_file(char * file, TreeMap *nameMap, TreeMap *valuationMap, TreeMap *
     insertTreeMap(nameMap, game->name, game);
     list_exists(valuationMap, costMap, game);
   }
-  printf("Datos Cargados Correctamente :D\n");
+  printf("\nDatos Cargados Correctamente :D\n\n");
 }
 
 games *createGame(char *name, char*releaseDate, int valuation, int cost){
@@ -216,7 +225,7 @@ void insert_list(TreeMap *map, games *game, int option){
   pushBack(list, game->name);
 }
 
-void print_all_games(TreeMap *nameMap, TreeMap *map){
+void print_all_games(TreeMap *nameMap){
   printf("Nombre, año de salida, valoracion, precio\n");
   Pair *pr = firstTreeMap(nameMap);
   int i = 1;
@@ -303,4 +312,76 @@ void print_bycost(TreeMap *nameMap,TreeMap *costMap){
       aux =prevTreeMap(costMap);
     }
   }else printf("Opcion incorrecta (1 o 2)\n");
+}
+
+void searchGame(TreeMap *nameMap, TreeMap *valuationMap, TreeMap *costMap){
+  char name[50];
+  int option = 1;
+  printf("Ingrese El juego que desea buscar\n");
+  getchar();
+  scanf("%100[^\n]s", name);
+  getchar();
+  Pair *aux = searchTreeMap(nameMap, name);
+  games *game = aux->value;
+  print_nameMap(nameMap, name);
+  printf("Ingrese lo que desea realizar\n");
+  printf("[1] Editar datos del juego\n");
+  printf("[2] Eliminar Juego\n");
+  scanf("%d", &option);
+
+  if(option == 1){
+    editGame(game, nameMap, valuationMap, costMap);
+  }else if (option == 2){
+    removeNode(nameMap, nameMap->current);
+  }else return ;
+
+  deleteFromList(valuationMap, name);
+  deleteFromList(costMap, name);
+}
+
+void editGame(games *game, TreeMap *nameMap ,TreeMap *valuationMap, TreeMap *costMap){
+  removeNode(nameMap, nameMap->current);
+  
+  char name[50];
+  char releaseDate[30];
+  int valuation, cost;
+
+  printf("Ingrese el nuevo nombre:\n");
+  scanf("%100[^\n]s", name);
+
+  getchar();
+
+  printf("Ingrese la nueva fecha de lanzamiento:\n");
+  scanf("%100[^\n]s", releaseDate);
+
+  printf("Ingrese la nueva valuación:\n");
+  scanf("%d", &valuation);
+
+  printf("Ingrese el nuevo precio\n");
+  scanf("%d", &cost);
+
+  strcpy(game->name, name);
+  strcpy(game->releaseDate, releaseDate);
+  game->valuation = valuation;
+  game->cost = cost;
+
+  insertTreeMap(nameMap, game->name, game);
+  list_exists(valuationMap, costMap, game);
+  
+}
+
+void deleteFromList(TreeMap *map, char *name){
+  Pair *aux = firstTreeMap(map);
+  List *list = aux->value;
+  do{
+    List *list = aux->value;
+    char *id = firstList(list);
+    do{
+      if(strcmp(id, name) == 0){
+        popCurrent(list);
+      }
+      id = nextList(list);
+    }while (id != NULL);
+    aux = nextTreeMap(map);
+  }while(aux != NULL);
 }
