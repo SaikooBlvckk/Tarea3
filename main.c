@@ -16,16 +16,18 @@ typedef struct{
 void menu();
 void select_option();
 const char *get_csv_field(char *, int);
-int lower_than_int(int *, int *);
+int lower_than_int(void *, void *);
 void file_exists(TreeMap *, TreeMap *, TreeMap *);
 int check_file_exists(char *);
 void import_file(char *, TreeMap *, TreeMap *, TreeMap *);
 games *createGame(char *, char *, int, int);
+void insert_list(TreeMap *, games *, int);
 void list_exists(TreeMap *, TreeMap *, games *);
 void create_list(TreeMap *, games *, int);
 void print_nameMap(TreeMap * , char *);
 void print_byValuation(TreeMap *nameMap, TreeMap *map);
-void add_game(TreeMap *, TreeMap *, TreeMap *);
+void add_game(TreeMap *, TreeMap *, TreeMap *);\
+void print_bycost(TreeMap *);
 
 void print_all_games(TreeMap *, TreeMap *); 
 
@@ -52,7 +54,7 @@ void select_option() {
   TreeMap *costMap = createTreeMap(lower_than_int);
 
   int choice = -1;
-  system("clear");
+  system("cls");
 
   while (choice != 0) {
     menu();
@@ -60,39 +62,39 @@ void select_option() {
     scanf("%d", &choice);
     switch (choice) {
     case 1:
-        system("clear");
+        system("cls");
         file_exists(nameMap,valuationMap, costMap);
       break;
     case 2:
-        system("clear");
+        system("cls");
         add_game(nameMap,valuationMap, costMap);
       break;
     case 3:
-        system("clear");
+        system("cls");
         printf("op %d\n", choice);
       break;
     case 4:
-        system("clear");
+        system("cls");
         print_byValuation(nameMap, valuationMap);
       break;
     case 5:
-        system("clear");
+        system("cls");
         printf("op %d\n", choice);
       break;
     case 6:
-        system("clear");
+        system("cls");
         printf("op %d\n", choice);
       break;
     case 7:
-        system("clear");
+        system("cls");
         printf("op %d\n", choice);
       break;
     case 0:
-        system("clear");
+        system("cls");
       printf("Hasta la proxima\n");
       break;
     default:
-        system("clear");
+        system("cls");
         printf("Opcion incorrecta, intente de nuevo\n");
         print_all_games(nameMap, valuationMap);
       break;
@@ -126,7 +128,7 @@ int check_file_exists(char *file) {
     return 0;
 }
 
-int lower_than_int(int* key1, int* key2){
+int lower_than_int(void * key1, void * key2) {
     return key1<key2;
 }
 
@@ -223,11 +225,12 @@ void insert_list(TreeMap *map, games *game, int option){
 }
 
 void print_all_games(TreeMap *nameMap, TreeMap *map){
+  printf("Nombre, año de salida, valoracion, precio\n");
   Pair *pr = firstTreeMap(nameMap);
   int i = 1;
   do{
     games *data = pr->value;
-    printf("%d", i++);
+    printf("%d ", i++);
     print_nameMap(nameMap, data->name);
     pr = nextTreeMap(nameMap);
   }while(pr != NULL);
@@ -244,6 +247,7 @@ void print_byValuation(TreeMap *nameMap, TreeMap *map){
   int valuation;
   printf("Indique la valoracion por la que quiere filtrar:\n");
   scanf("%d", &valuation);
+  printf("Nombre, año de salida, valoracion, precio\n");
   Pair *aux = upperBound(map, valuation);
   do{
     List *list = aux->value;
@@ -276,4 +280,8 @@ void add_game(TreeMap *nameMap, TreeMap *valuationMap, TreeMap *costMap){
   games *game = createGame(name, date, valuation, cost);
   insertTreeMap(nameMap, game->name, game);
   list_exists(valuationMap, costMap, game);
+}
+
+void print_bycost(TreeMap *costMap){
+  
 }

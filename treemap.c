@@ -33,6 +33,15 @@ TreeNode * minimum(TreeNode * x){
     return x;
 }
 
+TreeNode * maximum(TreeNode *x){
+    if (x == NULL) return NULL;
+
+    while (x->right != NULL){
+        x = x->right;
+    }
+    return x;
+}
+
 
 TreeNode * createTreeNode(void* key, void * value) {
     TreeNode * new = (TreeNode *)malloc(sizeof(TreeNode));
@@ -206,5 +215,38 @@ Pair * nextTreeMap(TreeMap * tree) {
     
     if (aux == NULL) return NULL;
     
+    return aux->pair;
+}
+
+Pair *lastTreeMap(TreeMap *tree){
+    if (tree == NULL || tree->root == NULL) return NULL;
+
+    TreeNode *aux = tree->root;
+    tree->current = maximum(aux);
+
+    if (tree->current == NULL) return NULL;
+
+    return tree->current->pair;
+}
+
+Pair *prevTreeMap(TreeMap *tree){
+    if(tree == NULL || tree->root == NULL || tree->current == NULL) return NULL;
+    
+    if(tree->current->left != NULL){
+        TreeNode *aux = tree->current->left;
+        tree->current = maximum(aux);
+        return tree->current->pair;
+    }
+
+    TreeNode *aux = tree->current->parent;
+    
+    while(aux != NULL && tree->current == aux->left){
+        tree->current = aux;
+        aux = aux->parent;
+    }
+    tree->current = aux;
+    
+    if (aux == NULL) return NULL;
+
     return aux->pair;
 }
