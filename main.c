@@ -27,7 +27,7 @@ void create_list(TreeMap *, games *, int);
 void print_nameMap(TreeMap * , char *);
 void print_byValuation(TreeMap *nameMap, TreeMap *map);
 void add_game(TreeMap *, TreeMap *, TreeMap *);\
-void print_bycost(TreeMap *);
+void print_bycost(TreeMap *,TreeMap *);
 
 void print_all_games(TreeMap *, TreeMap *); 
 
@@ -60,44 +60,36 @@ void select_option() {
     menu();
     printf("\nSeleccione un opcion:\n");
     scanf("%d", &choice);
+    system("cls");
     switch (choice) {
-    case 1:
-        system("cls");
-        file_exists(nameMap,valuationMap, costMap);
-      break;
-    case 2:
-        system("cls");
-        add_game(nameMap,valuationMap, costMap);
-      break;
-    case 3:
-        system("cls");
-        printf("op %d\n", choice);
-      break;
-    case 4:
-        system("cls");
-        print_byValuation(nameMap, valuationMap);
-      break;
-    case 5:
-        system("cls");
-        printf("op %d\n", choice);
-      break;
-    case 6:
-        system("cls");
-        printf("op %d\n", choice);
-      break;
-    case 7:
-        system("cls");
-        printf("op %d\n", choice);
-      break;
-    case 0:
-        system("cls");
-      printf("Hasta la proxima\n");
-      break;
-    default:
-        system("cls");
-        printf("Opcion incorrecta, intente de nuevo\n");
-        print_all_games(nameMap, valuationMap);
-      break;
+      case 1:
+          file_exists(nameMap,valuationMap, costMap);
+        break;
+      case 2:
+          add_game(nameMap,valuationMap, costMap);
+        break;
+      case 3:
+          print_bycost(nameMap, costMap);
+        break;
+      case 4:
+          print_byValuation(nameMap, valuationMap);
+        break;
+      case 5:
+          printf("op %d\n", choice);
+        break;
+      case 6:
+          printf("op %d\n", choice);
+        break;
+      case 7:
+          printf("op %d\n", choice);
+        break;
+      case 0:
+        printf("Hasta la proxima\n");
+        break;
+      default:
+          printf("Opcion incorrecta, intente de nuevo\n");
+          print_all_games(nameMap, valuationMap);
+        break;
     }
   }
 }
@@ -282,6 +274,33 @@ void add_game(TreeMap *nameMap, TreeMap *valuationMap, TreeMap *costMap){
   list_exists(valuationMap, costMap, game);
 }
 
-void print_bycost(TreeMap *costMap){
-  
+void print_bycost(TreeMap *nameMap,TreeMap *costMap){
+  int option;
+  printf("[1] imprimir de menor a mayor\n");
+  printf("[2] imprimir de mayor a menor\n");
+  scanf("%d", &option);
+  Pair *aux;
+  if(option == 1){
+    aux = firstTreeMap(costMap);
+    while(aux != NULL){
+      List *list = aux->value;
+      games *game = firstList(list);
+      while (game != NULL){
+        print_nameMap(nameMap, game->name);
+        game =nextList(list);
+      }
+      aux =nextTreeMap(costMap);
+    }
+  }else if(option == 2){
+    aux = lastTreeMap(costMap);
+    while(aux != NULL){
+      List *list = aux->value;
+      games *game = firstList(list);
+      while (game != NULL){
+        print_nameMap(nameMap, game->name);
+        game =nextList(list);
+      }
+      aux =prevTreeMap(costMap);
+    }
+  }else printf("Opcion incorrecta (1 o 2)\n");
 }
