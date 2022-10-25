@@ -6,6 +6,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
+
+//Estructura 
 typedef struct{
   char name[50];
   char releaseDate[30];
@@ -13,6 +15,7 @@ typedef struct{
   int cost;
 }games;
 
+//Declaracion de funciones
 void menu();
 void select_option();
 const char *get_csv_field(char *, int);
@@ -37,11 +40,13 @@ void export_csv(TreeMap *);
 
 void print_all_games(TreeMap *);
 
+//Codigo principal
 int main(){
   select_option();
   return 0;
 }
 
+//Menú opciones
 void menu() {
   printf("===MENU===\n");
   printf("1. Importar juegos desde un archivo CSV\n");
@@ -54,6 +59,7 @@ void menu() {
   printf("0. Salir");
 }
 
+//Declaracion de mapas y seleccion de opciones
 void select_option() {
   TreeMap *nameMap = createTreeMap(lower_than_string);
   TreeMap *valuationMap = createTreeMap(lower_than_int);
@@ -99,11 +105,12 @@ void select_option() {
   }
 }
 
+//Manda a verificar que el archivo exista
 void file_exists(TreeMap *nameMap,TreeMap *valuationMap, TreeMap *costMap) {
   char file[30];
   strcpy(file, "Videojuegos.csv"); /* ! testing purposes */
   printf("\nIngrese el nombre del Archivo .csv:\n");
-  //scanf("%s", &file);
+  scanf("%s", &file);
   while (1) {
     if (check_file_exists(file)) {
       printf("\n---Importando Archivo Con los items---\n");
@@ -116,6 +123,7 @@ void file_exists(TreeMap *nameMap,TreeMap *valuationMap, TreeMap *costMap) {
   import_file(file, nameMap, valuationMap, costMap);
 }
 
+//Verifica que el archivo exista
 int check_file_exists(char *file) {
   struct stat buffer;
   int exist = stat(file, &buffer);
@@ -125,15 +133,19 @@ int check_file_exists(char *file) {
     return 0;
 }
 
+//Compara 2 claves de tipo int
 int lower_than_int(void * key1, void * key2) {
   return key1<key2;
 }
 
+
+//Compara 2 claves de tipo char
 int lower_than_string(void * key1, void * key2) {
     if(strcmp(key1, key2) < 0) return 1;
     return 0;
 }
 
+//funcion del profesor
 const char *get_csv_field(char *tmp, int k) {
   int open_mark = 0;
   char *ret = (char *)malloc(100 * sizeof(char));
@@ -176,6 +188,7 @@ const char *get_csv_field(char *tmp, int k) {
   return NULL;
 }
 
+//Se importa el archivo y se ingresan los respectivos datos
 void import_file(char * file, TreeMap *nameMap, TreeMap *valuationMap, TreeMap *costMap) {
   FILE *fp = fopen(file, "r");
 
@@ -191,6 +204,7 @@ void import_file(char * file, TreeMap *nameMap, TreeMap *valuationMap, TreeMap *
   printf("\nDatos Cargados Correctamente :D\n\n");
 }
 
+//Crea un jueg y rellena sus datos
 games *createGame(char *name, char*releaseDate, int valuation, int cost){
   games *game = (games *)malloc(sizeof(games));
   strcpy(game->name, name);
@@ -200,6 +214,7 @@ games *createGame(char *name, char*releaseDate, int valuation, int cost){
   return game;
 }
 
+//Ve si la lista de valoracion o costo existe, si no existe crea uno nuevo y si existe lo inserta en la lista
 void list_exists(TreeMap *valuationMap, TreeMap *costMap, games *game){
   if(searchTreeMap(valuationMap, game->valuation) == NULL) create_list(valuationMap, game, 1);
   else insert_list(valuationMap, game, 1);
@@ -208,6 +223,7 @@ void list_exists(TreeMap *valuationMap, TreeMap *costMap, games *game){
   else insert_list(costMap, game, 2);
 }
 
+//Crea la lista 
 void create_list(TreeMap *map, games *game, int option){
   List *list =createList();
   pushBack(list, game->name);
@@ -217,6 +233,7 @@ void create_list(TreeMap *map, games *game, int option){
     insertTreeMap(map, game->cost, list);
 }
 
+//Inserta la lista en el mapa
 void insert_list(TreeMap *map, games *game, int option){
   List *list = (List *)malloc(sizeof(List));
   if (option == 1)
@@ -226,6 +243,8 @@ void insert_list(TreeMap *map, games *game, int option){
   pushBack(list, game->name);
 }
 
+
+//Funcion propia que imprime todos los juegos
 void print_all_games(TreeMap *nameMap){
   printf("Nombre, año de salida, valoracion, precio\n");
   Pair *pr = firstTreeMap(nameMap);
@@ -238,6 +257,7 @@ void print_all_games(TreeMap *nameMap){
   }while(pr != NULL);
 }
 
+//Imprime los nombres de todos los juegos
 void print_nameMap(TreeMap *nameMap, char *key) {
   Pair *data = searchTreeMap(nameMap, key);
   games *aux = data->value;
@@ -245,12 +265,17 @@ void print_nameMap(TreeMap *nameMap, char *key) {
           aux->valuation);
 }
 
+//Imprime los juegos por valoracion
 void print_byValuation(TreeMap *nameMap, TreeMap *map){
   int valuation;
   printf("Indique la valoracion por la que quiere filtrar:\n");
   scanf("%d", &valuation);
-  printf("Nombre, año de salida, valoracion, precio\n");
   Pair *aux = upperBound(map, valuation);
+  if (aux == NULL){
+    printf("Valoracion no encontrada, reintente!\n");
+    return ;
+  }
+  printf("Nombre, año de salida, valoracion, precio\n");
   do{
     List *list = aux->value;
     char *id = firstList(list);
@@ -262,6 +287,7 @@ void print_byValuation(TreeMap *nameMap, TreeMap *map){
   }while(aux != NULL);
 }
 
+//Pide los datos para crear un nuevo juego
 void add_game(TreeMap *nameMap, TreeMap *valuationMap, TreeMap *costMap){
   char name[50];
   char date[30];
@@ -284,6 +310,7 @@ void add_game(TreeMap *nameMap, TreeMap *valuationMap, TreeMap *costMap){
   list_exists(valuationMap, costMap, game);
 }
 
+//Imprime segun la valoracion
 void print_bycost(TreeMap *nameMap,TreeMap *costMap){
   int option;
   printf("[1] imprimir de menor a mayor\n");
@@ -315,6 +342,7 @@ void print_bycost(TreeMap *nameMap,TreeMap *costMap){
   }else printf("Opcion incorrecta (1 o 2)\n");
 }
 
+//Busca el juego que el usuario ingresa para luego editar los datos o eliminar el juego
 void searchGame(TreeMap *nameMap, TreeMap *valuationMap, TreeMap *costMap){
   char name[50];
   int option = 1;
@@ -323,6 +351,10 @@ void searchGame(TreeMap *nameMap, TreeMap *valuationMap, TreeMap *costMap){
   scanf("%100[^\n]s", name);
   getchar();
   Pair *aux = searchTreeMap(nameMap, name);
+  if(aux == NULL) {
+    printf("Juego no existe, reintente!\n");
+    return ;
+  }
   games *game = aux->value;
   print_nameMap(nameMap, name);
   printf("Ingrese lo que desea realizar\n");
@@ -340,6 +372,7 @@ void searchGame(TreeMap *nameMap, TreeMap *valuationMap, TreeMap *costMap){
   deleteFromList(costMap, name);
 }
 
+//Funcion para editar un juego
 void editGame(games *game, TreeMap *nameMap ,TreeMap *valuationMap, TreeMap *costMap){
   removeNode(nameMap, nameMap->current);
   
@@ -371,6 +404,7 @@ void editGame(games *game, TreeMap *nameMap ,TreeMap *valuationMap, TreeMap *cos
   
 }
 
+//Funcion para borrar un juego
 void deleteFromList(TreeMap *map, char *name){
   Pair *aux = firstTreeMap(map);
   List *list = aux->value;
@@ -387,6 +421,7 @@ void deleteFromList(TreeMap *map, char *name){
   }while(aux != NULL);
 }
 
+//Imprime por año
 void print_byAge(TreeMap *JuegosVal){
   char age[30];
   printf("Ingrese el anio a buscar\n");
@@ -416,9 +451,12 @@ void print_byAge(TreeMap *JuegosVal){
     aux= prevTreeMap(JuegosVal);
   }
   if(gamePrinted > 1) printf("Todos con una valoracion de %d\n", valuationSearched);
-  else printf("Con una valoracion de %d\n", valuationSearched);
+  else if (gamePrinted == 1)printf("Con una valoracion de %d\n", valuationSearched);
+  else printf("Ano no encontrado\n");
 }
 
+
+//Exporta el archivo
 void export_csv(TreeMap *nameMap){
   char fileName[30];
   printf("Ingrese Nombre para el archivo (Recuerde la extencion .csv)\n");
