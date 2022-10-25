@@ -33,6 +33,7 @@ void searchGame(TreeMap *, TreeMap *, TreeMap *);
 void editGame(games *, TreeMap *, TreeMap *, TreeMap *);
 void deleteFromList(TreeMap *, char *);
 void print_byAge(TreeMap *);
+void export_csv(TreeMap *);
 
 void print_all_games(TreeMap *);
 
@@ -47,7 +48,7 @@ void menu() {
   printf("2. Agregar juego\n");
   printf("3. Mostrar juegos por precio\n");
   printf("4. Filtrar juegos por valoracion\n");
-  printf("5. Mostrar juegos del año\n");
+  printf("5. Mostrar juegos del ano\n");
   printf("6. Buscar juego\n");
   printf("7. Exportar datos\n");
   printf("0. Salir");
@@ -86,14 +87,13 @@ void select_option() {
           searchGame(nameMap, valuationMap, costMap);
         break;
       case 7:
-          printf("op %d\n", choice);
+          export_csv(nameMap);
         break;
       case 0:
         printf("Hasta la proxima\n");
         break;
       default:
           printf("Opcion incorrecta, intente de nuevo\n");
-          print_all_games(nameMap);
         break;
     }
   }
@@ -355,7 +355,7 @@ void editGame(games *game, TreeMap *nameMap ,TreeMap *valuationMap, TreeMap *cos
   printf("Ingrese la nueva fecha de lanzamiento:\n");
   scanf("%100[^\n]s", releaseDate);
 
-  printf("Ingrese la nueva valuación:\n");
+  printf("Ingrese la nueva valuacion:\n");
   scanf("%d", &valuation);
 
   printf("Ingrese el nuevo precio\n");
@@ -417,4 +417,23 @@ void print_byAge(TreeMap *JuegosVal){
   }
   if(gamePrinted > 1) printf("Todos con una valoracion de %d\n", valuationSearched);
   else printf("Con una valoracion de %d\n", valuationSearched);
+}
+
+void export_csv(TreeMap *nameMap){
+  char fileName[30];
+  printf("Ingrese Nombre para el archivo (Recuerde la extencion .csv)\n");
+  scanf("%s",&fileName);
+  FILE *outFile = fopen(fileName, "w");
+  if(outFile == NULL) printf("Error al crear el archivo, termine el programa\n");
+  else{
+    fprintf(outFile,"Nombre,año de salida,valoracion,precio\n");
+
+    Pair *pr = firstTreeMap(nameMap);
+    do{
+      games *data = pr->value;
+      fprintf(outFile,"%s, %s, %d, %d\n",data->name, data->releaseDate, data->valuation, data->cost);
+      pr = nextTreeMap(nameMap);
+    }while(pr != NULL);
+    printf("Archivo creado con exito!!\n");
+  }
 }
