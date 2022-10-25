@@ -32,6 +32,7 @@ void print_bycost(TreeMap *,TreeMap *);
 void searchGame(TreeMap *, TreeMap *, TreeMap *);
 void editGame(games *, TreeMap *, TreeMap *, TreeMap *);
 void deleteFromList(TreeMap *, char *);
+void print_byAge(TreeMap *);
 
 void print_all_games(TreeMap *);
 
@@ -79,7 +80,7 @@ void select_option() {
           print_byValuation(nameMap, valuationMap);
         break;
       case 5:
-          printf("op %d\n", choice);
+          print_byAge(valuationMap);
         break;
       case 6:
           searchGame(nameMap, valuationMap, costMap);
@@ -384,4 +385,36 @@ void deleteFromList(TreeMap *map, char *name){
     }while (id != NULL);
     aux = nextTreeMap(map);
   }while(aux != NULL);
+}
+
+void print_byAge(TreeMap *JuegosVal){
+  char age[30];
+  printf("Ingrese el anio a buscar\n");
+  getchar();
+  scanf("%100[^\n]s", age);
+
+  Pair * aux = lastTreeMap(JuegosVal);
+  int gamePrinted = 0, valuationSearched;
+  while(aux!=NULL){
+    List * juegos = aux->value;
+    games * game = lastList(juegos);
+    while(game!=NULL){  
+      if(game->releaseDate[6] == age[0] && game->releaseDate[7] == age[1] && game->releaseDate[8] == age[2] && game->releaseDate[9] == age[3]){
+        if (gamePrinted == 0){
+          printf("%s\n",game->name);
+          gamePrinted++;
+          valuationSearched = game->valuation;
+        }else{
+          if (valuationSearched == game->valuation){
+            printf("%s\n",game->name);
+            gamePrinted++;
+          }
+        }  
+      }
+      game = prevList(juegos);
+    }
+    aux= prevTreeMap(JuegosVal);
+  }
+  if(gamePrinted > 1) printf("Todos con una valoracion de %d\n", valuationSearched);
+  else printf("Con una valoracion de %d\n", valuationSearched);
 }
